@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 
 // EXPORTS THE AUTH CONTEXT PROVIDER
-export const AuthContextProvider = ({ children }) => {
+export const AuthProvider = ({ children }) => {
 
     // USER STATE
     const [user, setUser] = useState(null);
