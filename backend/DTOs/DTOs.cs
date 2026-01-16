@@ -1,6 +1,4 @@
-﻿using TaskManager.Models;
-
-namespace TaskManager.DTOs
+﻿namespace TaskManager.DTOs
 {
     public record AuthRequest
     (
@@ -14,5 +12,37 @@ namespace TaskManager.DTOs
         int userId,
         string Email,
         string Token
+    );
+
+    public record TaskDTO
+    (
+        int Id,
+        string Message,
+        bool IsDone
+        
+    );
+
+    public record GetTasksResponse
+    (
+        string? Message,
+        List<TaskDTO> Tasks
+    );
+
+    public record CreateTaskRequest
+    (
+        string Title
+    );
+
+    public record CreateTaskResponse
+    (
+        int Id,
+        string Title,
+        bool IsDone
+    );
+
+    public record UpdateTaskRequest
+    (
+        string? Title,
+        bool? IsDone
     );
 }
