@@ -96,17 +96,23 @@ namespace TaskManager.API
             }
         }
 
-        [HttpPut("{id}")] 
-        public async Task<IActionResult> Update(int id, [FromBody] TaskItem updated)
+        [HttpPatch("{id}")] 
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateTaskRequest request)
         {
+            // GET THE TASK
             var task = await _context.Tasks.FindAsync(id);
+
+            // RETURNS 404 IF TASK NOT FOUND
             if (task == null) return NotFound();
 
-            task.Title = updated.Title;
-            task.IsDone = updated.IsDone;
+            // UPDATES THE TASK
+            if (request.Title != null) task.Title = request.Title;
+            if (request.IsDone.HasValue) task.IsDone = request.IsDone.Value;
+
+            // SAVES CHANGES TO DATABASE
             await _context.SaveChangesAsync();
 
-            return Ok(task);
+            return Ok("Tasks updated successfully.");
         }
 
         [HttpDelete("{id}")]
