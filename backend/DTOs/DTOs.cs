@@ -1,4 +1,5 @@
-﻿using TaskManager.Models;
+﻿using System.Reflection;
+using TaskManager.Models;
 
 namespace TaskManager.DTOs
 {
@@ -20,5 +21,16 @@ namespace TaskManager.DTOs
     (
         string? Message,
         List<TaskItem> Tasks
+    );
+
+    public record CreateTaskRequest
+    (
+        string Title
+    );
+
+    public record UpdateTaskRequest
+    (
+        string? Title,
+        bool? IsDone
     );
 }
