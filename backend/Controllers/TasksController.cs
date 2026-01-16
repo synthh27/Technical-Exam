@@ -1,15 +1,17 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
 using TaskManager.Models;
 using TaskManager.Data;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using TaskManager.Controllers.Base;
 namespace TaskManager.API
 {
-    [Route("tasks")]
+    [Authorize]
+    [Route("api/tasks")]
     [ApiController]
-    public class TasksController : ControllerBase
+    public class TasksController : BaseController
     {
         private readonly ApplicationDbContext _context;
 
@@ -21,7 +23,9 @@ namespace TaskManager.API
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            
+            // EXTRACT USER ID FROM JWT
+
+            // FETCH TASKS
             var tasks = await _context.Tasks.ToListAsync();
             return Ok(tasks);
         }
