@@ -5,6 +5,7 @@ using TaskManager.Data;
 using TaskManager.DTOs;
 using TaskManager.Models;
 using TaskManager.Services;
+using TaskManager.Utility;
 namespace TaskManager.Controllers
 {
     [Route("api/auth")]
@@ -45,7 +46,7 @@ namespace TaskManager.Controllers
             // CREATE NEW USER
             var newUser = new User
             {
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                PasswordHash = Helpers.HashPassword(request.Password),
                 Email = request.Email
             };
 
@@ -70,6 +71,28 @@ namespace TaskManager.Controllers
                     "User Regustered Successfully.",
                     newUser.Id, newUser.Email, token)
                 );
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] AuthRequest request)
+        {
+            // FINDS USER BY EMAIL
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == request.Email);
+
+            // RETURNS 401 IF THE CREDENTIALS ARE INVALID
+            if(user is null || !Helpers.VerifyPassowrd(request.Password, user.PasswordHash))
+            {
+                return Unauthorized("Invalid credentials.");
+            }
+
+            // GENERATES JWT TOKEN
+            var token = _jwtService.GenerateToken(user);
+
+            // RETURNS SUCCESS RESPONSE
+            return Ok(new AuthResponse(
+                "Login Successful.",
+                user.Id, user.Email, token)
+            );
         }
     }
 }
