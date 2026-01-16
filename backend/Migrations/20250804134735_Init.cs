@@ -32,7 +32,7 @@ namespace task_manager_api.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Title = table.Column<string>(type: "text", nullable: false),
-                    IsDone = table.Column<bool>(type: "boolean", nullable: false),
+                    IsDone = table.Column<bool>(type: "boolean",defaultValue: false, nullable: false),
                     UserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
