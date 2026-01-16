@@ -1,4 +1,4 @@
-import ProtectedRoute from './components/ProtectedRoute.jsx';
+import ProtectedRoute from './routes/ProtectedRoutes.jsx';
 import { AuthProvider } from './context/AuthProvider.jsx';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
@@ -14,7 +14,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/tasks" element={
+          <Route path="/" element={
             <ProtectedRoute>
               <Tasks />
             </ProtectedRoute>
