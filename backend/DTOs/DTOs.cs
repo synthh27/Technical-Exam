@@ -10,7 +10,7 @@ namespace TaskManager.DTOs
 
     public record AuthResponse
     (
-        string Message,
+        string? Message,
         int userId,
         string Email,
         string Token
