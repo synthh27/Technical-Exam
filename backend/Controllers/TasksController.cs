@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Security.Claims;
 using TaskManager.Controllers.Base;
 using TaskManager.Data;
@@ -23,25 +24,76 @@ namespace TaskManager.API
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            // FETCHES ALL USER TASKS
+            // FETCHES ALL USER'S TASKS
             var tasks = await _context.Tasks
                 .Where(t => t.UserId == UserId)
+                .Select(t => new TaskDTO(
+                    t.Id,
+                    t.Title,
+                    t.IsDone
+                ))
                 .ToListAsync();
 
             // RETURNS 404 IF NO TASKS FOUND
-            if (!tasks.Any()) return NotFound("No tasks found");
+            if (tasks.Count == 0) return NotFound("No tasks found");
 
             // RETURNS 200 WITH TASKS LIST
-            return Ok(new GetTasksResponse("Tasks fetched successfully", tasks));
+            return Ok( new GetTasksResponse(
+                "Tasks fetched successfully",
+                tasks));
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetByTaskId(int id)
+        {
+            // FETCHES TASK BY ID
+            var task = await _context.Tasks
+                .FirstOrDefaultAsync(t => t.Id == id && t.UserId == UserId);
+
+            // RETURNS 404 IF TASKS NOT FOUND
+            if (task == null) return NotFound("Task not found");
+            
+            // RETURNS 200 WITH TASK
+            return Ok(task);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] TaskItem task)
+        public async Task<IActionResult> Create([FromBody] CreateTaskRequest request)
         {
-            
-            _context.Tasks.Add(task);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(Get), new { id = task.Id }, task);
+            // GETS USER FROM DB
+            var currUser = await _context.Users.FirstAsync(u => u.Id == UserId);
+
+            // RETURNS 404 IF USER IS NULL
+            if (currUser is null) return NotFound("User not found");
+
+            Debug.WriteLine($"this is the emaillll: {currUser}");
+
+            //CREATE NEW TASK            
+            var newTask = new TaskItem
+            {
+                Title = request.Title,
+                UserId = UserId
+            };
+
+            try {
+                // ADDS NEW TASK TO DATABASE
+                _context.Tasks.Add(newTask);
+                await _context.SaveChangesAsync();
+
+                // RETURN 201 WITH CREATED TASK
+                return CreatedAtAction(
+                    nameof(GetByTaskId),
+                    new { id = newTask.Id },
+                    new CreateTaskResponse(
+                        newTask.Id,
+                        newTask.Title,
+                        newTask.IsDone
+                    )
+                );
+            } catch (Exception ex) {
+                // RETURN 400 IF FAILED TO SAVE TO DB
+                return BadRequest("Failed to save to db.");
+            }
         }
 
         [HttpPut("{id}")] 
