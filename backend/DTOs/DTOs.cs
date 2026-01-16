@@ -15,4 +15,10 @@ namespace TaskManager.DTOs
         string Email,
         string Token
     );
+
+    public record GetTasksResponse
+    (
+        string? Message,
+        List<TaskItem> Tasks
+    );
 }
