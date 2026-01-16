@@ -1,11 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
-using TaskManager.Models;
-using TaskManager.Data;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using TaskManager.Controllers.Base;
+using TaskManager.Data;
+using TaskManager.DTOs;
+using TaskManager.Models;
 namespace TaskManager.API
 {
     [Authorize]
@@ -23,11 +23,16 @@ namespace TaskManager.API
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            // EXTRACT USER ID FROM JWT
+            // FETCHES ALL USER TASKS
+            var tasks = await _context.Tasks
+                .Where(t => t.UserId == UserId)
+                .ToListAsync();
 
-            // FETCH TASKS
-            var tasks = await _context.Tasks.ToListAsync();
-            return Ok(tasks);
+            // RETURNS 404 IF NO TASKS FOUND
+            if (!tasks.Any()) return NotFound("No tasks found");
+
+            // RETURNS 200 WITH TASKS LIST
+            return Ok(new GetTasksResponse("Tasks fetched successfully", tasks));
         }
 
         [HttpPost]
