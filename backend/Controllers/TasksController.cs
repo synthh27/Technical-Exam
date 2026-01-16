@@ -118,13 +118,19 @@ namespace TaskManager.API
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            // FIND TASK BY ID
             var task = await _context.Tasks.FindAsync(id);
-            if (task == null) return NotFound();
 
+            // RETURN 404 IF TASK NOT FOUND
+            if (task is null) return NotFound("Task do not exist.");
+
+            // DELETE TASK FROM DATABASE
             _context.Tasks.Remove(task);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            // RETURN 200 
+            return Ok("Task deleted successfully");
         }
+
     }
 }
