@@ -1,18 +1,18 @@
-﻿namespace TaskManager.DTOs
-{
-    public class DTOs
-    {
-        public record AuthRequest
-        (
-            string Enail,
-            string Password
-        );
+﻿using TaskManager.Models;
 
-        public record AuthResponse
-        (
-            int userId,
-            string Email,       
-            string Token
-        );
-    }
+namespace TaskManager.DTOs
+{
+    public record AuthRequest
+    (
+        string Email,
+        string Password
+    );
+
+    public record AuthResponse
+    (
+        string Message,
+        int userId,
+        string Email,
+        string Token
+    );
 }
